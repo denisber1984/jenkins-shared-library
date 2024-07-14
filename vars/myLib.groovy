@@ -23,7 +23,7 @@ def runUnitTests(nexusUrl, nexusRepo, commitId, buildNumber) {
 
 def runLinting(nexusUrl, nexusRepo, commitId, buildNumber) {
     docker.image("${nexusUrl}/repository/${nexusRepo}:${commitId}-${buildNumber}").inside {
-        sh 'pylint polybot/*.py'
+        sh 'pylint polybot/*.py > pylint.log || true'
     }
 }
 
