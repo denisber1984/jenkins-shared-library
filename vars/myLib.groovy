@@ -2,6 +2,7 @@
 def sayHello(String name = 'World') {
     echo "Hello, ${name}!"
 }
+
 def buildDockerImage(nexusUrl, nexusRepo, commitId, buildNumber) {
     docker.build("${nexusUrl}/repository/${nexusRepo}:${commitId}-${buildNumber}", "-f polybot/Dockerfile polybot")
 }
@@ -18,6 +19,12 @@ def runUnitTests(nexusUrl, nexusRepo, commitId, buildNumber) {
         sh 'python3 -m pytest --junitxml=results.xml tests/test.py'
     }
     junit 'results.xml'
+}
+
+def runLinting(nexusUrl, nexusRepo, commitId, buildNumber) {
+    docker.image("${nexusUrl}/repository/${nexusRepo}:${commitId}-${buildNumber}").inside {
+        sh 'pylint polybot/*.py'
+    }
 }
 
 def snykSecurityScan(nexusUrl, nexusRepo, commitId, buildNumber, snykToken) {
